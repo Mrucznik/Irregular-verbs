@@ -1,0 +1,45 @@
+﻿<Window x:Class="IrregularVerbs.LearnView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:IrregularVerbs"
+        mc:Ignorable="d"
+        Title="LearnView" Height="287.369" Width="311.943">
+    <Grid Background="#FF2A5C97">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="1*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Vertical" Grid.Row="0">
+            <TextBlock x:Name="SummaryTextBlock" HorizontalAlignment="Right" TextWrapping="Wrap" Text="" VerticalAlignment="Center"/>
+            <TextBlock x:Name="MessageTextBlock" HorizontalAlignment="Left" TextWrapping="Wrap" Text="" VerticalAlignment="Center"/>
+        </StackPanel>
+
+        <TextBlock Grid.Row="1" x:Name="VerbTextBlock" HorizontalAlignment="Center" TextWrapping="Wrap" Text="" VerticalAlignment="Center" FontSize="24" MinWidth="100"/>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Center">
+            <TextBox x:Name="VerbForm1TextBox" Height="23" MinWidth="134" TextWrapping="Wrap" Text="" VerticalAlignment="Center"/>
+            <CheckBox x:Name="VerbForm1CheckBox" IsEnabled="False" VerticalAlignment="Center"/>
+            <TextBlock x:Name="CorrectVerbForm1TextBlock" TextWrapping="Wrap" Text="" FontWeight="Bold" VerticalAlignment="Center"/>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="3" HorizontalAlignment="Center">
+            <TextBox x:Name="VerbForm2TextBox" Height="23" MinWidth="134" TextWrapping="Wrap" Text="" VerticalAlignment="Center"/>
+            <CheckBox x:Name="VerbForm2CheckBox" IsEnabled="False" VerticalAlignment="Center"/>
+            <TextBlock x:Name="CorrectVerbForm2TextBlock" TextWrapping="Wrap" Text="" FontWeight="Bold" VerticalAlignment="Center"/>
+        </StackPanel>
+
+        <Button Grid.Row="4" x:Name="CheckButton" Content="Sprawdź!" HorizontalAlignment="Center" VerticalAlignment="Center" Width="74" Click="CheckButton_Click"/>
+        <Button Grid.Row="5" x:Name="NextButton" Content="Następny" HorizontalAlignment="Center" VerticalAlignment="Center" Width="75" Click="NextButton_Click"/>
+    </Grid>
+</Window>
