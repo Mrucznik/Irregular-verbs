@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Angielskie czasowniki – nauka</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 700px; margin: 20px auto; }
+        .hidden { display: none; }
+        button { padding: 6px 12px; margin: 5px 0; }
+        input { padding: 6px; width: 100%; margin: 5px 0; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        td, th { border: 1px solid #ccc; padding: 6px; text-align: left; }
+        .correct { color: green; font-weight: bold; }
+        .wrong { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<h1>Nauka czasowników nieregularnych</h1>
+
+<button id="manageBtn">Tryb: Zarządzanie słowami</button>
+<button id="learnBtn">Tryb: Nauka</button>
+
+<hr>
+
+<div id="manageSection" class="hidden">
+    <h2>Zarządzanie czasownikami</h2>
+
+    <h3>Dodaj nowy czasownik (3 formy)</h3>
+    <input id="f1" placeholder="1. forma (np. go)">
+    <input id="f2" placeholder="2. forma (np. went)">
+    <input id="f3" placeholder="3. forma (np. gone)">
+    <button id="addBtn">Dodaj</button>
+
+    <h3>Lista czasowników</h3>
+    <table id="verbsTable">
+        <thead>
+        <tr><th>1. forma</th><th>2. forma</th><th>3. forma</th><th>Usuń</th></tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<div id="learnSection" class="hidden">
+    <h2>Tryb nauki</h2>
+    <div id="learnBox">
+        <p id="question"></p>
+        <input id="ans2" placeholder="2. forma">
+        <input id="ans3" placeholder="3. forma">
+        <button id="nextBtn">Dalej</button>
+        <p id="feedback"></p>
+    </div>
+</div>
+
+<script>
+    let verbs = JSON.parse(localStorage.getItem("verbs") || "[]");
+
+    function saveVerbs() {
+        localStorage.setItem("verbs", JSON.stringify(verbs));
+    }
+
+    const manageSection = document.getElementById("manageSection");
+    const learnSection = document.getElementById("learnSection");
+
+    document.getElementById("manageBtn").onclick = () => {
+        manageSection.classList.remove("hidden");
+        learnSection.classList.add("hidden");
+        updateTable();
+    };
+
+    document.getElementById("learnBtn").onclick = () => {
+        manageSection.classList.add("hidden");
+        learnSection.classList.remove("hidden");
+        startLearning();
+    };
+
+    document.getElementById("addBtn").onclick = () => {
+        let f1v = f1.value.trim();
+        let f2v = f2.value.trim();
+        let f3v = f3.value.trim();
+        if (!f1v || !f2v || !f3v) return;
+
+        verbs.push({ f1: f1v, f2: f2v, f3: f3v });
+        saveVerbs();
+        updateTable();
+
+        f1.value = f2.value = f3.value = "";
+    };
+
+    function updateTable() {
+        let tbody = document.querySelector("#verbsTable tbody");
+        tbody.innerHTML = "";
+        verbs.forEach((v, i) => {
+            let row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${v.f1}</td>
+                <td>${v.f2}</td>
+                <td>${v.f3}</td>
+                <td><button onclick="deleteVerb(${i})">X</button></td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    function deleteVerb(i) {
+        verbs.splice(i, 1);
+        saveVerbs();
+        updateTable();
+    }
+
+    let learnList = [];
+    let wrongList = [];
+    let current = 0;
+    let showingCorrection = false;
+
+    function startLearning() {
+        if (verbs.length === 0) {
+            document.getElementById("question").innerHTML = "Brak słów do nauki.";
+            return;
+        }
+        learnList = [...verbs];
+        wrongList = [];
+        current = 0;
+        nextWord();
+    }
+
+    function nextWord() {
+        if (showingCorrection) {
+            showingCorrection = false;
+            document.getElementById("feedback").innerHTML = "";
+        }
+
+        if (current >= learnList.length) {
+            if (wrongList.length > 0) {
+                learnList = [...wrongList];
+                wrongList = [];
+                current = 0;
+            } else {
+                document.getElementById("question").innerHTML =
+                    "🎉 Gratulacje! Wszystkie czasowniki zostały wykonane poprawnie!<br><br>" +
+                    "Aby lepiej utrwalić materiał, powtórz ćwiczenie za jakiś czas.";
+                document.getElementById("ans2").style.display = "none";
+                document.getElementById("ans3").style.display = "none";
+                document.getElementById("nextBtn").style.display = "none";
+                return;
+            }
+        }
+
+        let word = learnList[current];
+        document.getElementById("question").innerHTML = `Podaj 2. i 3. formę dla: <b>${word.f1}</b>`;
+        document.getElementById("ans2").value = "";
+        document.getElementById("ans3").value = "";
+        document.getElementById("ans2").focus();
+    }
+
+    function checkAnswer() {
+        let word = learnList[current];
+        let a2 = document.getElementById("ans2").value.trim();
+        let a3 = document.getElementById("ans3").value.trim();
+
+        if (!showingCorrection) {
+            if (a2 === word.f2 && a3 === word.f3) {
+                document.getElementById("feedback").innerHTML =
+                    "<span class='correct'>✔ Poprawnie!</span>";
+            } else {
+                document.getElementById("feedback").innerHTML =
+                    `<span class='wrong'>✖ Błędnie.</span><br>
+                     Poprawna odpowiedź: ${word.f2}, ${word.f3}`;
+                wrongList.push(word);
+            }
+            showingCorrection = true;
+        } else {
+            current++;
+            nextWord();
+        }
+    }
+
+    document.getElementById("nextBtn").onclick = checkAnswer;
+
+    document.getElementById("ans3").addEventListener("keydown", e => {
+        if (e.key === "Enter") checkAnswer();
+    });
+</script>
+
+</body>
+</html>
